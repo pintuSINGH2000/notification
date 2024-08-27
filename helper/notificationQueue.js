@@ -4,10 +4,9 @@ const { PrismaClient } = require("@prisma/client");
 const nodemailer = require("nodemailer");
 const IORedis = require("ioredis");
 
-const connection = new IORedis({
-  host: "localhost",
-  port: 6379,
-  maxRetriesPerRequest: null,
+const connection = new IORedis('redis://red-cr6svql6l47c739ajb3g:6379', {
+  maxRetriesPerRequest: null, 
+  enableReadyCheck: false,   
 });
 
 connection.on("connect", () => {
@@ -62,13 +61,5 @@ const worker = new Worker(
   { connection }
 );
 
-worker.on("completed", (job, result) => {
-  console.log(`Job ${job.id} completed with result:`, result);
-});
-
-// Handle job failure
-worker.on("failed", (job, err) => {
-  console.error(`Job ${job.id} failed with error:`, err);
-});
 
 module.exports = { notificationQueue };
